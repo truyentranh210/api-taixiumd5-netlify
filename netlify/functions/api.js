@@ -1,44 +1,33 @@
-// 🎰 API DỰ ĐOÁN TÀI XỈU - JSON ONLY
-// Phiên bản fix hoàn chỉnh, hoạt động 100% trên Netlify
-
 let lichSu = [];
-const KHOA_ADMIN = "matkhau123"; // 🔒 Đổi nếu muốn
+const KHOA_ADMIN = "matkhau123";
 
 export const handler = async (event) => {
   const path = event.path || "/";
   const query = event.queryStringParameters || {};
   const md5 = (query.hash || "").trim().toLowerCase();
 
-  // /home — hướng dẫn API
   if (path.endsWith("/home")) {
     return traJSON({
-      ten_api: "🎰 API Dự đoán Tài Xỉu (MD5)",
-      mo_ta: "Phân tích chuỗi MD5 thật, không dùng random, trả kết quả Tài/Xỉu chính xác cao.",
+      ten_api: "🎰 API Dự đoán Tài Xỉu (Phân tích MD5)",
+      mo_ta: "Phân tích chuỗi MD5 thật - không random.",
       huong_dan: {
-        "/home": "Xem hướng dẫn sử dụng API",
+        "/home": "Hiển thị hướng dẫn API",
         "/md5?hash=<mã_md5>": "Phân tích chuỗi MD5",
         "/history": "Xem 10 kết quả gần nhất",
-        "/admin?key=<khoá_quản_trị>": "Xem toàn bộ dữ liệu (chỉ admin)"
+        "/admin?key=<khoá_quản_trị>": "Xem toàn bộ dữ liệu"
       },
-      vi_du: {
-        ma_md5_mau: "244ac48695d4a2ced8e29ed56dc28b25",
-        yeu_cau_mau: "/md5?hash=244ac48695d4a2ced8e29ed56dc28b25"
-      },
-      tac_gia: "GPT-5 Assistant",
       cap_nhat: new Date().toLocaleString("vi-VN")
     });
   }
 
-  // /md5 — phân tích chuỗi
   if (path.endsWith("/md5")) {
     if (!/^[0-9a-f]{32}$/.test(md5))
-      return traJSON({ loi: "Mã MD5 không hợp lệ! Phải gồm 32 ký tự hex." }, 400);
+      return traJSON({ loi: "Mã MD5 không hợp lệ (32 ký tự hex)" }, 400);
 
     const parts = [];
     for (let i = 0; i < 32; i += 8) parts.push(md5.slice(i, i + 8));
     const nums = parts.map(p => parseInt(p, 16));
     const tong = nums.reduce((a, b) => a + b, 0);
-
     let tich = 1;
     for (let i = 0; i < 4; i++) tich *= (nums[i] % 1000) + 1;
 
@@ -60,8 +49,6 @@ export const handler = async (event) => {
       do_tin_cay: ((Math.max(tai, xiu) / (tai + xiu)) * 100).toFixed(2) + "%",
       diem_du_doan:
         (Array.from(md5.slice(0, 3)).reduce((a, c) => a + parseInt(c, 16), 0) % 16) + 3,
-      diem_tai: tai,
-      diem_xiu: xiu,
       chi_tiet: {
         tong_hash: tong,
         ty_le_bit: `${bit1}:${bit0}`,
@@ -72,41 +59,28 @@ export const handler = async (event) => {
 
     lichSu.push(ketQua);
     if (lichSu.length > 100) lichSu = lichSu.slice(-100);
-
     return traJSON(ketQua);
   }
 
-  // /history — xem 10 kết quả gần nhất
   if (path.endsWith("/history")) {
-    if (lichSu.length === 0)
-      return traJSON({ thong_bao: "Chưa có dữ liệu nào." });
     return traJSON({
       tong_so_lan: lichSu.length,
-      gan_nhat_10_lan: lichSu.slice(-10).reverse(),
-      cap_nhat: new Date().toLocaleString("vi-VN")
+      gan_nhat_10_lan: lichSu.slice(-10).reverse()
     });
   }
 
-  // /admin — xem toàn bộ dữ liệu
   if (path.endsWith("/admin")) {
     if (query.key !== KHOA_ADMIN)
-      return traJSON({ loi: "Sai khoá hoặc không có quyền truy cập." }, 403);
+      return traJSON({ loi: "Sai khoá hoặc không có quyền." }, 403);
     return traJSON({
       tong_ban_ghi: lichSu.length,
-      du_lieu: lichSu,
-      ghi_chu: "Chỉ quản trị viên mới được xem toàn bộ dữ liệu.",
-      thoi_gian: new Date().toLocaleString("vi-VN")
+      du_lieu: lichSu
     });
   }
 
-  // Mặc định
-  return traJSON({
-    thong_bao: "🎰 API Dự đoán Tài Xỉu (MD5)",
-    huong_dan: "/home để xem hướng dẫn chi tiết"
-  });
+  return traJSON({ thong_bao: "🎰 API Dự đoán Tài Xỉu — dùng /home để xem hướng dẫn" });
 };
 
-// Hàm trả JSON chuẩn
 function traJSON(data, status = 200) {
   return {
     statusCode: status,
