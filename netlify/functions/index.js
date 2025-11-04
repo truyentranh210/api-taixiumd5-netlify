@@ -27,7 +27,7 @@ export const handler = async (event) => {
         ma_md5_mau: "244ac48695d4a2ced8e29ed56dc28b25",
         yeu_cau: "/md5?hash=244ac48695d4a2ced8e29ed56dc28b25"
       },
-      tac_gia: "GPT-5 Assistant",
+      tac_gia: "Duc Minh IOS",
       cap_nhat_luc: new Date().toLocaleString("vi-VN")
     });
   }
