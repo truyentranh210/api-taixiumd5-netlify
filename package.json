@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "netlify/functions/index.js",
   "scripts": {
-    "build": "echo 'No build step required'"
+    "build": "echo 'Không cần build, chỉ chạy Netlify Functions'"
   },
   "license": "MIT"
 }
