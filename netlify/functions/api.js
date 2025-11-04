@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 let lichSu = [];
-const KHOA_ADMIN = "matkhau123";
+const KHOA_ADMIN = "minhhocgioi";
 
 // 🏠 Trang hướng dẫn
 app.get(["/", "/home"], (req, res) => {
