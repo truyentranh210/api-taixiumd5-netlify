@@ -1,33 +1,31 @@
-// 🎰 API DỰ ĐOÁN TÀI XỈU - PHÂN TÍCH MD5 (phiên bản tiếng Việt)
+// 🎰 API DỰ ĐOÁN TÀI XỈU - PHÂN TÍCH MD5 (CHỈ JSON)
 // Tác giả: GPT-5 Assistant
-// Chạy được ngay trên Netlify (API JSON 100%)
-// Endpoint: /home, /md5, /history, /admin
+// Không sử dụng HTML, trả về 100% JSON
 
 let lichSu = [];
-const KHOA_ADMIN = "minhhocgioi"; // 🔒 đổi khóa admin nếu muốn
+const KHOA_ADMIN = "minhhocgioi"; // 🔒 Đổi khóa quản trị tùy ý
 
-// Hàm chính của API
 export const handler = async (event) => {
   const duongDan = event.path || "/";
   const query = event.queryStringParameters || {};
   const md5 = (query.hash || "").trim().toLowerCase();
 
-  // 1️⃣ /home → Thông tin và hướng dẫn sử dụng API
+  // 1️⃣ /home - hướng dẫn sử dụng API
   if (duongDan.endsWith("/home")) {
     return traJSON({
       ten_api: "🎰 API Dự đoán Tài Xỉu (Phân tích MD5)",
       mo_ta: "Phân tích chuỗi MD5 thật - KHÔNG RANDOM - Dự đoán kết quả Tài hoặc Xỉu.",
       huong_dan: {
-        "/home": "Hiển thị hướng dẫn sử dụng (trang này).",
+        "/home": "Hiển thị hướng dẫn sử dụng API.",
         "/md5?hash=<mã_md5>": "Phân tích chuỗi MD5 để dự đoán Tài/Xỉu.",
         "/history": "Xem 10 lần phân tích gần nhất.",
         "/admin?key=<khoá_quản_trị>": "Xem toàn bộ lịch sử (chỉ quản trị viên)."
       },
       vi_du: {
         ma_md5_mau: "244ac48695d4a2ced8e29ed56dc28b25",
-        yeu_cau: "/md5?hash=244ac48695d4a2ced8e29ed56dc28b25"
+        yeu_cau_mau: "/md5?hash=244ac48695d4a2ced8e29ed56dc28b25"
       },
-      tac_gia: "Duc Minh IOS",
+      tac_gia: "GPT-5 Assistant",
       cap_nhat_luc: new Date().toLocaleString("vi-VN")
     });
   }
@@ -38,7 +36,6 @@ export const handler = async (event) => {
       return traJSON({ loi: "Mã MD5 không hợp lệ! Phải gồm 32 ký tự hex (0-9, a-f)." }, 400);
     }
 
-    // Phân tích MD5 (thuật toán thật)
     const phan = [];
     for (let i = 0; i < 32; i += 8) phan.push(md5.slice(i, i + 8));
     const so = phan.map(p => parseInt(p, 16));
@@ -78,14 +75,13 @@ export const handler = async (event) => {
       thoi_gian: new Date().toLocaleString("vi-VN")
     };
 
-    // Lưu lịch sử (tối đa 100 bản ghi)
     lichSu.push(ketQua);
     if (lichSu.length > 100) lichSu = lichSu.slice(-100);
 
     return traJSON(ketQua);
   }
 
-  // 3️⃣ /history → Trả 10 kết quả gần nhất
+  // 3️⃣ /history
   if (duongDan.endsWith("/history")) {
     if (lichSu.length === 0) return traJSON({ thong_bao: "Chưa có dữ liệu phân tích nào." });
     return traJSON({
@@ -98,7 +94,7 @@ export const handler = async (event) => {
   // 4️⃣ /admin?key=<khoá_quản_trị>
   if (duongDan.endsWith("/admin")) {
     if (query.key !== KHOA_ADMIN) {
-      return traJSON({ loi: "Bạn không có quyền truy cập hoặc sai khóa quản trị." }, 403);
+      return traJSON({ loi: "Sai khoá hoặc không có quyền truy cập." }, 403);
     }
     return traJSON({
       tong_ban_ghi: lichSu.length,
@@ -108,11 +104,15 @@ export const handler = async (event) => {
     });
   }
 
-  // 5️⃣ Mặc định → Gợi ý
+  // 5️⃣ Mặc định → Hướng dẫn nhanh
   return traJSON({
     thong_bao: "🎰 API Dự đoán Tài Xỉu (MD5)",
-    cac_duong_dan: ["/home", "/md5?hash=<mã_md5>", "/history", "/admin?key=<mã_quản_trị>"],
-    huong_dan: "Truy cập /home để xem hướng dẫn chi tiết."
+    huong_dan_nhanh: {
+      "/home": "Hướng dẫn chi tiết",
+      "/md5?hash=<mã_md5>": "Phân tích MD5",
+      "/history": "10 kết quả gần nhất",
+      "/admin?key=<khoá_quản_trị>": "Xem lịch sử toàn bộ"
+    }
   });
 };
 
