@@ -2,8 +2,5 @@
   "name": "tai-xiu-api",
   "version": "1.0.0",
   "main": "netlify/functions/api.js",
-  "scripts": {
-    "build": "echo 'Không cần build, chỉ chạy Netlify Functions'"
-  },
   "license": "MIT"
 }
