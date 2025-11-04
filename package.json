@@ -2,5 +2,8 @@
   "name": "tai-xiu-api",
   "version": "1.0.0",
   "main": "netlify/functions/api.js",
-  "license": "MIT"
+  "dependencies": {
+    "express": "^4.19.2",
+    "serverless-http": "^3.2.0"
+  }
 }
