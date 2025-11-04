@@ -1,0 +1,9 @@
+{
+  "name": "tai-xiu-api",
+  "version": "1.0.0",
+  "main": "netlify/functions/index.js",
+  "scripts": {
+    "build": "echo 'No build step required'"
+  },
+  "license": "MIT"
+}
